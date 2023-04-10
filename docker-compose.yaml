@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "80:5000"
+    environment:
+      FLASK_APP: app.py
+    restart: always
+    volumes:
+      - static_value:/var/html/static/
+
+volumes:
+  static_value:
