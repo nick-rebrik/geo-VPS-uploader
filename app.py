@@ -1,5 +1,5 @@
+import requests
 from flask import Flask
-import socket
 
 
 app = Flask(__name__)
@@ -14,11 +14,14 @@ LOCATIONS = {
 }
 
 
+def get_ip():
+    request = requests.get('https://api.ipify.org')
+    return request.text
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    hostname = socket.gethostname()
-    ip_address = socket.gethostbyname(hostname)
-    return LOCATIONS[ip_address]
+    return LOCATIONS[get_ip()]
 
 
 @app.route('/download/<path:file>/')
