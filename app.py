@@ -49,6 +49,7 @@ def record_upload_time():
 
 def get_nearest_ip(target_ip, locations):
     target_ip_geo = requests.get(f'http://ip-api.com/json/{target_ip}').json()
+    print(target_ip)
     target_ip_geo = (target_ip_geo['lat'], target_ip_geo['lon'])
     nearest_ip = None
     min_distance = float('inf')
@@ -79,8 +80,9 @@ def download(file_name):
     return send_from_directory(app.config['UPLOAD_FOLDER'], file_name, as_attachment=True)
 
 
-@app.route('/upload/<file_link>', methods=['POST'])
-def upload(file_link):
+@app.route('/upload/', methods=['POST'])
+def upload():
+    file_link = request.json['file_link']
     r = requests.get(file_link)
     file_name = get_file_extension(file_link)
     with open(f'{UPLOAD_FOLDER}/{file_name}', 'wb') as file:
@@ -107,13 +109,16 @@ def upload(file_link):
 def index():
     if request.method == 'POST':
         try:
-            file_link = request.form["file_url"].replace('http://', '')
+            file_link = request.form["file_url"]
             file_location = get_file_host_ip(file_link)
             nearest_vps = get_nearest_ip(file_location, LOCATIONS)
             if nearest_vps == SELF_IP:
                 result = upload(file_link)
             else:
-                result = requests.post(f'http://{nearest_vps}/upload/{file_link}').content
+                result = requests.post(
+                    f'http://{nearest_vps}/upload/',
+                    data=json.dumps({'file_link': file_link})
+                ).content
             return render_template('index.html', message=result)
 
         except socket.gaierror:
