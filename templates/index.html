@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Завантаження файлу</title>
+
+        <link rel="stylesheet" href="/static/style.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
+    <body>
+        <div class="input-container">
+            <h1 class="text-center">Upload file</h1>
+            <div id="data-input">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="fileInput">File link</label>
+                        <input type="text" class="form-control" id="fileInput" name="file_url" onchange="unlockUpload()" placeholder="Enter file link">
+                    </div>
+                    <button type="submit" id="submit" class="btn btn-primary btn-block" onclick="showLoader()" disabled>Upload</button>
+                </form>
+            </div>
+            <div class="d-flex justify-content-center">
+                <div id="loader" class="spinner-border" role="status" hidden>
+                    <span class="visually-hidden"></span>
+                </div>
+            </div>
+            {% if message %}
+                <div class="alert alert-success" role="alert">
+                        {{ message.vps }}<br>
+                        VPS IP: {{ message.vps_ip }}<br>
+                        Upload time: {{ message.upload_time }}<br>
+                        Upload date: {{ message.upload_date }}<br>
+                        File link: <a href="{{ message.file_link }}">{{ message.file_link }}</a>
+                        <a href="{{ url_for('download', file_name=message.file_name) }}" download>
+                            <button class="btn btn-success btn-block mt-2">Download</button>
+                        </a>
+                </div>
+            {% elif error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endif %}
+        </div>
+
+        <script>
+            function unlockUpload() {
+                document.getElementById('submit').disabled = false
+            }
+            function showLoader() {
+                document.getElementById('data-input').hidden = true;
+                document.getElementById('loader').hidden = false;
+            }
+        </script>
+
+    </body>
+</html>
+
+
