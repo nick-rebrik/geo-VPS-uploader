@@ -76,6 +76,7 @@ def download(file_name):
     nearest_vps = get_nearest_ip(request.remote_addr, LOCATIONS)
     if nearest_vps != SELF_IP:
         return requests.get(f'http://{nearest_vps}/download/{file_name}')
+    print('DOWNLOAD FROM' + SELF_IP)
     return send_from_directory(app.config['UPLOAD_FOLDER'], file_name, as_attachment=True)
 
 
