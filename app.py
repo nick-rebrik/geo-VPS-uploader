@@ -113,8 +113,7 @@ def index():
             if nearest_vps == SELF_IP:
                 result = upload(file_link)
             else:
-                result = requests.get(f'http://{nearest_vps}/upload/{file_link}').content
-            result = json.loads(result)
+                result = requests.post(f'http://{nearest_vps}/upload/{file_link}').content
             return render_template('index.html', message=result)
 
         except socket.gaierror:
