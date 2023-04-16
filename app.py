@@ -119,6 +119,7 @@ def index():
                     data=json.dumps({'file_link': file_link}),
                     headers={'Content-Type': 'application/json'}
                 ).content
+            result = json.loads(result)
             return render_template('index.html', message=result)
 
         except socket.gaierror:
