@@ -108,6 +108,7 @@ def index():
             file_location = get_file_host_ip(file_link)
             nearest_vps = get_nearest_ip(file_location, LOCATIONS)
             if nearest_vps == SELF_IP:
+                print(f'{" YES ":-^100}')
                 result = upload(file_link)
             else:
                 result = requests.get(f'http://{nearest_vps}/upload/{file_link}')
