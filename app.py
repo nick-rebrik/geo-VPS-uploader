@@ -81,7 +81,9 @@ def download(file_name):
 
 @app.route('/upload/', methods=['POST'])
 def upload():
-    file_link = request.json['file_link']
+    data = request.json
+
+    file_link = data['file_link']
     r = requests.get(file_link)
     file_name = get_file_extension(file_link)
     with open(f'{UPLOAD_FOLDER}/{file_name}', 'wb') as file:
@@ -101,6 +103,18 @@ def upload():
         'file_name': file_name
     }
 
+    if data['replicate']:
+        for location in LOCATIONS.keys():
+            if location != SELF_IP:
+                try:
+                    requests.post(
+                        url=f'http://{location}/upload/',
+                        data=json.dumps({'file_link': file_link, 'replicate': False}),
+                        headers={'Content-Type': 'application/json'}
+                    )
+                except Exception:
+                    pass
+
     return json.dumps(res)
 
 
@@ -116,7 +130,7 @@ def index():
             else:
                 result = requests.post(
                     url=f'http://{nearest_vps}/upload/',
-                    data=json.dumps({'file_link': file_link}),
+                    data=json.dumps({'file_link': file_link, 'replicate': True}),
                     headers={'Content-Type': 'application/json'}
                 ).content
             result = json.loads(result)
