@@ -116,7 +116,7 @@ def index():
                 result = upload(file_link)
             else:
                 result = requests.post(
-                    f'http://{nearest_vps}/upload/',
+                    url=f'http://{nearest_vps}/upload/',
                     data=json.dumps({'file_link': file_link})
                 ).content
             return render_template('index.html', message=result)
