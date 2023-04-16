@@ -1,3 +1,4 @@
+import json
 import os
 import socket
 from datetime import datetime
@@ -90,7 +91,7 @@ def upload(file_link):
 
     location = LOCATIONS[SELF_IP]
 
-    return {
+    res = {
         'vps': f'{location["name"]} {location["location"]}',
         'vps_ip': SELF_IP,
         'upload_time': upload_time,
@@ -98,6 +99,8 @@ def upload(file_link):
         'file_link': file_link,
         'file_name': file_name
     }
+
+    return json.dumps(res)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -111,6 +114,7 @@ def index():
                 result = upload(file_link)
             else:
                 result = requests.get(f'http://{nearest_vps}/upload/{file_link}').content
+            result = json.loads(result)
             return render_template('index.html', message=result)
 
         except socket.gaierror:
