@@ -107,7 +107,7 @@ def upload(file_link):
 def index():
     if request.method == 'POST':
         try:
-            file_link = request.form["file_url"]
+            file_link = request.form["file_url"].replace('http://', '')
             file_location = get_file_host_ip(file_link)
             nearest_vps = get_nearest_ip(file_location, LOCATIONS)
             if nearest_vps == SELF_IP:
