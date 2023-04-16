@@ -49,7 +49,6 @@ def record_upload_time():
 
 def get_nearest_ip(target_ip, locations):
     target_ip_geo = requests.get(f'http://ip-api.com/json/{target_ip}').json()
-    print(target_ip)
     target_ip_geo = (target_ip_geo['lat'], target_ip_geo['lon'])
     nearest_ip = None
     min_distance = float('inf')
@@ -117,7 +116,8 @@ def index():
             else:
                 result = requests.post(
                     url=f'http://{nearest_vps}/upload/',
-                    data=json.dumps({'file_link': file_link})
+                    data=json.dumps({'file_link': file_link}),
+                    headers={'Content-Type': 'application/json'}
                 ).content
             return render_template('index.html', message=result)
 
