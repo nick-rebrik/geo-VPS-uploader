@@ -85,13 +85,13 @@ def get_nearest_vps():
 def download():
     data = request.json
     file_name = data['file_name']
-    nearest_vps = '3.75.230.137'#  get_nearest_ip(request.remote_addr)
+    vps = data['vps']
 
-    if nearest_vps == SELF_IP:
+    if vps == SELF_IP:
         return send_file(f'{UPLOAD_FOLDER}/{file_name}', as_attachment=True)
 
     r = requests.post(
-        url=f'http://{nearest_vps}/upload/',
+        url=f'http://{vps}/download/',
         data=json.dumps({'file_name': file_name}),
         headers={'Content-Type': 'application/json'}
     )
@@ -123,17 +123,17 @@ def upload():
         'file_name': file_name
     }
 
-    # if data['replicate']:
-    #     for location in LOCATIONS.keys():
-    #         if location != SELF_IP:
-    #             try:
-    #                 requests.post(
-    #                     url=f'http://{location}/upload/',
-    #                     data=json.dumps({'file_link': file_link, 'replicate': False}),
-    #                     headers={'Content-Type': 'application/json'}
-    #                 )
-    #             except Exception:
-    #                 pass
+    if data['replicate']:
+        for location in LOCATIONS.keys():
+            if location != SELF_IP:
+                try:
+                    requests.post(
+                        url=f'http://{location}/upload/',
+                        data=json.dumps({'file_link': file_link, 'replicate': False}),
+                        headers={'Content-Type': 'application/json'}
+                    )
+                except Exception:
+                    pass
 
     return json.dumps(res)
 
