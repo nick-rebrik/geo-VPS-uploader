@@ -51,21 +51,21 @@
             }
 
         function downloadFile() {
-            var start_time = new Date().getTime();  // Запам'ятовуємо початковий час
+            var start_time = new Date().getTime();
 
             // Виконуємо завантаження файлу
             $.ajax({
-                url: '/download/',  // URL для скачування файла на Flask сервері
+                url: '/download/',
                 type: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 data: JSON.stringify({
-                    'file_name': "{{ message.file_name if message else '' }}",
-                    'vps': "3.75.230.137"
+                    file_name: '{{ message.file_name if message else "" }}',
+                    vps: '3.75.230.137'
                 }),
                 xhrFields: {
-                    responseType: 'blob'  // Отримуємо відповідь як blob (binary large object)
+                    responseType: 'blob'
                 },
                 success: function(data) {
                     var end_time = new Date().getTime();  // Запам'ятовуємо кінцевий час
