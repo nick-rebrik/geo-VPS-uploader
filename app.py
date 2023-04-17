@@ -84,9 +84,8 @@ def get_nearest_vps():
 @app.route('/download/', methods=['POST'])
 def download():
     data = request.json
-    print(data)
     file_name = data['file_name']
-    vps = data['vps']
+    vps = data['vps'] if data['vps'] else SELF_IP
 
     if vps == SELF_IP:
         return send_file(f'{UPLOAD_FOLDER}/{file_name}', as_attachment=True)
