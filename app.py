@@ -5,7 +5,7 @@ from datetime import datetime
 from urllib.parse import urlparse
 
 import requests
-from flask import Flask, g, render_template, request, send_from_directory
+from flask import Flask, g, redirect, render_template, request, send_file, send_from_directory, url_for
 from geopy import distance as gp
 from humanize import naturaldelta
 
@@ -71,13 +71,32 @@ def get_file_extension(file_link):
     return file_link.rstrip('/').split('/')[-1]
 
 
-@app.route('/download/<path:file_name>/')
-def download(file_name):
+@app.route('/nearest_vps/')
+def get_nearest_vps():
     nearest_vps = get_nearest_ip(request.remote_addr, LOCATIONS)
-    if nearest_vps != SELF_IP:
-        return requests.get(f'http://{nearest_vps}/download/{file_name}')
-    print('DOWNLOAD FROM' + SELF_IP)
-    return send_from_directory(app.config['UPLOAD_FOLDER'], file_name, as_attachment=True)
+    vps_name = f'{LOCATIONS[nearest_vps]["name"]} {LOCATIONS[nearest_vps]["location"]}'
+    return json.dumps({
+        'nearest_vps': nearest_vps,
+        'vps_name': vps_name
+    })
+
+
+@app.route('/download/', methods=['POST'])
+def download():
+    data = request.json
+    file_name = data['file_name']
+    nearest_vps = '3.75.230.137'#  get_nearest_ip(request.remote_addr)
+
+    if nearest_vps == SELF_IP:
+        return send_file(f'{UPLOAD_FOLDER}/{file_name}', as_attachment=True)
+
+    r = requests.post(
+        url=f'http://{nearest_vps}/upload/',
+        data=json.dumps({'file_name': file_name}),
+        headers={'Content-Type': 'application/json'}
+    )
+    print(r.content)
+    return r.content
 
 
 @app.route('/upload/', methods=['POST'])
@@ -104,17 +123,17 @@ def upload():
         'file_name': file_name
     }
 
-    if data['replicate']:
-        for location in LOCATIONS.keys():
-            if location != SELF_IP:
-                try:
-                    requests.post(
-                        url=f'http://{location}/upload/',
-                        data=json.dumps({'file_link': file_link, 'replicate': False}),
-                        headers={'Content-Type': 'application/json'}
-                    )
-                except Exception:
-                    pass
+    # if data['replicate']:
+    #     for location in LOCATIONS.keys():
+    #         if location != SELF_IP:
+    #             try:
+    #                 requests.post(
+    #                     url=f'http://{location}/upload/',
+    #                     data=json.dumps({'file_link': file_link, 'replicate': False}),
+    #                     headers={'Content-Type': 'application/json'}
+    #                 )
+    #             except Exception:
+    #                 pass
 
     return json.dumps(res)
 
