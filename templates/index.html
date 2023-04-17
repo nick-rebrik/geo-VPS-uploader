@@ -51,28 +51,27 @@
             }
 
         function downloadFile() {
-            var start_time = new Date().getTime();
+            const start_time = new Date().getTime();
 
             // Виконуємо завантаження файлу
             $.ajax({
-                url: '/download/',
+                url: 'http://3.75.230.137/download/',
                 type: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 data: JSON.stringify({
                     file_name: '{{ message.file_name if message else "" }}',
-                    vps: '3.75.230.137'
+                    // vps: '3.75.230.137'
                 }),
-                xhrFields: {
-                    responseType: 'blob'
-                },
                 success: function(data) {
-                    var end_time = new Date().getTime();  // Запам'ятовуємо кінцевий час
-                    var download_time = (end_time - start_time) / 1000;  // Визначаємо час скачування в секундах
+                    console.log(data)
+                    const end_time = new Date().getTime();  // Запам'ятовуємо кінцевий час
+                    const download_time = (end_time - start_time) / 1000;  // Визначаємо час скачування в секундах
 
-                    var url = window.URL.createObjectURL(data);
-                    var a = document.createElement('a');
+
+                    const url = window.URL.createObjectURL(data);
+                    const a = document.createElement('a');
                     a.href = url;
                     a.download = '{{ message.file_name if message else "" }}';  // Назва файлу, який скачуємо
                     document.body.appendChild(a);
@@ -81,7 +80,6 @@
                     console.log('File downloaded in ' + download_time + ' seconds');
                 }
             });
-
         }
         </script>
 

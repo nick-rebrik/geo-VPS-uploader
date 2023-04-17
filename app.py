@@ -5,7 +5,8 @@ from datetime import datetime
 from urllib.parse import urlparse
 
 import requests
-from flask import Flask, g, redirect, render_template, request, send_file, send_from_directory, url_for
+from flask import Flask, g, render_template, request, send_file
+from flask_cors import CORS
 from geopy import distance as gp
 from humanize import naturaldelta
 
@@ -15,6 +16,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 
 app = Flask(__name__)
+CORS(app)
 app.debug = True
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -87,16 +89,19 @@ def download():
     file_name = data['file_name']
     vps = data.get('vps', SELF_IP)
 
-    if vps == SELF_IP:
-        return send_file(f'{UPLOAD_FOLDER}/{file_name}', as_attachment=True)
+    # if vps == SELF_IP:
+    #     return send_file(f'{UPLOAD_FOLDER}/{file_name}', as_attachment=True, headers=['Access-Control-Allow-Origin'] = '*')
+    #
+    # r = requests.post(
+    #     url=f'http://{vps}/download/',
+    #     data=json.dumps({'file_name': file_name}),
+    #     headers={'Content-Type': 'application/json'}
+    # )
 
-    r = requests.post(
-        url=f'http://{vps}/download/',
-        data=json.dumps({'file_name': file_name}),
-        headers={'Content-Type': 'application/json'}
-    )
-    print(r.content)
-    return r.content
+    response = send_file(f'{UPLOAD_FOLDER}/{file_name}', as_attachment=True)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    # print(r.content)
+    return response
 
 
 @app.route('/upload/', methods=['POST'])
