@@ -84,6 +84,7 @@ def get_nearest_vps():
 @app.route('/download/', methods=['POST'])
 def download():
     data = request.json
+    print(data)
     file_name = data['file_name']
     vps = data['vps']
 
